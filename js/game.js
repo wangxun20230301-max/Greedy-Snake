@@ -19,8 +19,10 @@ let gameState = {
     score: 0,
     highScore: parseInt(localStorage.getItem('snakeHighScore')) || 0,
     gameLoop: null,
+    countdownInterval: null,
     isRunning: false,
     isPaused: false,
+    isCountingDown: false,
     currentDifficulty: 'medium'
 };
 
@@ -275,11 +277,7 @@ function startGame() {
 
     if (!gameState.isRunning) {
         initGame();
-        gameState.isRunning = true;
-        gameState.gameLoop = setInterval(gameLoop, CONFIG.difficulty[gameState.currentDifficulty].speed);
-        startBtn.textContent = '🔄 重新开始';
-        pauseBtn.disabled = false;
-        overlay.style.display = 'none';
+        startCountdown();
     } else if (gameState.isPaused) {
         gameState.isPaused = false;
         gameState.gameLoop = setInterval(gameLoop, CONFIG.difficulty[gameState.currentDifficulty].speed);
@@ -288,9 +286,40 @@ function startGame() {
     }
 }
 
+// 开始倒计时
+function startCountdown() {
+    gameState.isCountingDown = true;
+    let countdown = 5;
+
+    overlayTitle.innerHTML = '🎮 准备开始！';
+    overlayTitle.style.fontSize = '2.5em';
+    overlayMessage.innerHTML = `<span style="font-size: 4em; color: #f39c12; font-weight: bold;">${countdown}</span>`;
+    overlay.style.display = 'flex';
+
+    gameState.countdownInterval = setInterval(() => {
+        countdown--;
+
+        if (countdown > 0) {
+            overlayMessage.innerHTML = `<span style="font-size: 4em; color: #f39c12; font-weight: bold;">${countdown}</span>`;
+        } else {
+            clearInterval(gameState.countdownInterval);
+            overlayMessage.innerHTML = '<span style="font-size: 4em; color: #27ae60; font-weight: bold;">GO!</span>';
+
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                gameState.isRunning = true;
+                gameState.isCountingDown = false;
+                gameState.gameLoop = setInterval(gameLoop, CONFIG.difficulty[gameState.currentDifficulty].speed);
+                startBtn.textContent = '🔄 重新开始';
+                pauseBtn.disabled = false;
+            }, 500);
+        }
+    }, 1000);
+}
+
 // 暂停游戏
 function pauseGame() {
-    if (!gameState.isRunning || gameState.isPaused) return;
+    if (!gameState.isRunning || gameState.isPaused || gameState.isCountingDown) return;
 
     gameState.isPaused = true;
     clearInterval(gameState.gameLoop);
@@ -304,7 +333,11 @@ function pauseGame() {
 // 游戏结束
 function gameOver() {
     clearInterval(gameState.gameLoop);
+    if (gameState.countdownInterval) {
+        clearInterval(gameState.countdownInterval);
+    }
     gameState.isRunning = false;
+    gameState.isCountingDown = false;
 
     // 更新最高分
     if (gameState.score > gameState.highScore) {
@@ -359,6 +392,8 @@ document.addEventListener('keydown', (e) => {
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
         e.preventDefault();
 
+        if (gameState.isCountingDown) return;
+
         if (!gameState.isRunning || gameState.isPaused) {
             startGame();
             return;
@@ -391,7 +426,7 @@ document.addEventListener('keydown', (e) => {
     // 空格键暂停/继续
     if (key === ' ') {
         e.preventDefault();
-        if (gameState.isRunning) {
+        if (gameState.isRunning && !gameState.isCountingDown) {
             if (gameState.isPaused) {
                 startGame();
             } else {
@@ -404,22 +439,30 @@ document.addEventListener('keydown', (e) => {
 // 移动端控制
 document.getElementById('upBtn').addEventListener('click', () => {
     if (gameState.direction !== 'down') gameState.nextDirection = 'up';
-    if (!gameState.isRunning || gameState.isPaused) startGame();
+    if (!gameState.isRunning || gameState.isPaused) {
+        if (!gameState.isCountingDown) startGame();
+    }
 });
 
 document.getElementById('downBtn').addEventListener('click', () => {
     if (gameState.direction !== 'up') gameState.nextDirection = 'down';
-    if (!gameState.isRunning || gameState.isPaused) startGame();
+    if (!gameState.isRunning || gameState.isPaused) {
+        if (!gameState.isCountingDown) startGame();
+    }
 });
 
 document.getElementById('leftBtn').addEventListener('click', () => {
     if (gameState.direction !== 'right') gameState.nextDirection = 'left';
-    if (!gameState.isRunning || gameState.isPaused) startGame();
+    if (!gameState.isRunning || gameState.isPaused) {
+        if (!gameState.isCountingDown) startGame();
+    }
 });
 
 document.getElementById('rightBtn').addEventListener('click', () => {
     if (gameState.direction !== 'left') gameState.nextDirection = 'right';
-    if (!gameState.isRunning || gameState.isPaused) startGame();
+    if (!gameState.isRunning || gameState.isPaused) {
+        if (!gameState.isCountingDown) startGame();
+    }
 });
 
 // 按钮事件监听
