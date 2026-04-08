@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐍 贪吃蛇大冒险</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">🐍 贪吃蛇大冒险</h1>
+            <p class="subtitle">快乐游戏，健康成长！</p>
+        </header>
+
+        <div class="game-info">
+            <div class="info-box">
+                <span class="label">难度：</span>
+                <span class="value" id="difficultyDisplay">简单</span>
+            </div>
+            <div class="info-box">
+                <span class="label">得分：</span>
+                <span class="value" id="score">0</span>
+            </div>
+            <div class="info-box">
+                <span class="label">最高分：</span>
+                <span class="value" id="highScore">0</span>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button class="difficulty-btn" data-difficulty="easy">🌟 简单</button>
+            <button class="difficulty-btn active" data-difficulty="medium">⭐ 中等</button>
+            <button class="difficulty-btn" data-difficulty="hard">💫 困难</button>
+            <button class="control-btn" id="startBtn">▶️ 开始游戏</button>
+            <button class="control-btn" id="pauseBtn">⏸️ 暂停</button>
+        </div>
+
+        <div class="game-container">
+            <canvas id="gameCanvas" width="600" height="600"></canvas>
+            <div class="overlay" id="overlay">
+                <div class="overlay-content">
+                    <h2 id="overlayTitle">准备好了吗？</h2>
+                    <p id="overlayMessage">点击"开始游戏"按钮开始！</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>🎮 游戏说明</h3>
+            <ul>
+                <li>使用 <strong>↑ ↓ ← →</strong> 方向键控制蛇的方向</li>
+                <li>吃到 <strong>🍎</strong> 可以获得分数并变长</li>
+                <li>吃到 <strong>⭐</strong> 可以获得额外奖励分数</li>
+                <li>不要撞到墙壁或自己的身体哦！</li>
+            </ul>
+        </div>
+
+        <div class="mobile-controls">
+            <button class="mobile-btn" id="upBtn">⬆️</button>
+            <div class="middle-row">
+                <button class="mobile-btn" id="leftBtn">⬅️</button>
+                <button class="mobile-btn" id="downBtn">⬇️</button>
+                <button class="mobile-btn" id="rightBtn">➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>
